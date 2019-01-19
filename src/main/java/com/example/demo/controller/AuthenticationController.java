@@ -27,9 +27,15 @@ public class AuthenticationController {
 	@Value("${jwt.header}")
 	private String tokenHeader;
 	
-	@Autowired private AuthenticationManager authenticationManager;
-	@Autowired private JwtTokenUtil jwtTokenUtil;
-	
+	private AuthenticationManager authenticationManager;
+    private JwtTokenUtil jwtTokenUtil;
+     @Autowired 
+	public AuthenticationController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil) {
+	 
+		this.authenticationManager = authenticationManager;
+		this.jwtTokenUtil = jwtTokenUtil;
+	}
+
 	@PostMapping(value="/login")
 	public ResponseEntity<UserDTO> userLogin(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
 		try {

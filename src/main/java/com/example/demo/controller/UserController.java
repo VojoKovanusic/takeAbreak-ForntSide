@@ -20,10 +20,16 @@ import com.example.demo.service.UserService;
 @RestController
 public class UserController {
 	
-	@Autowired private UserService userService;
-	
-	@Autowired private  PausaService pausaService;
-	
+	 private UserService userService;
+	 private  PausaService pausaService;
+	 
+	 @Autowired
+	public UserController(UserService userService, PausaService pausaService) {
+	 
+		this.userService = userService;
+		this.pausaService = pausaService;
+	}
+
 	@GetMapping(value="/users")
 	//@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<List<User>> getUsers(){

@@ -14,8 +14,13 @@ import com.example.demo.service.UserService;
 @RestController
 public class PreLoginController {
 	
-	@Autowired private UserService userService;
-	
+	private UserService userService;
+	@Autowired 
+	public PreLoginController(UserService userService) {
+ 
+		this.userService = userService;
+	}
+
 	@PostMapping(value="/registration")
 	public ResponseEntity<Response> registration(@RequestBody User user) {
 		User dbUser = userService.save(user);

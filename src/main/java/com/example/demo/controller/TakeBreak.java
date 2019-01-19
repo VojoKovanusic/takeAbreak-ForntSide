@@ -15,10 +15,16 @@ import com.example.demo.service.EmployeeService;
 @RestController
 @CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
 public class TakeBreak { 
-	@Autowired
+	
 	private EmployeeService service;
 
-	
+	@Autowired
+	public TakeBreak(EmployeeService service) {
+ 
+		this.service = service;
+	}
+
+
 	@PutMapping(value = "/empoloyee/take/break")
 	public Employee takeABreak(@RequestBody Employee employee )throws InterruptedException  {
 		return service.takeABreak(employee);

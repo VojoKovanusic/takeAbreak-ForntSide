@@ -18,9 +18,13 @@ import com.example.demo.service.EmployeeService;
 @RestController
 @CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
 public class CRUDemployee {
-	@Autowired
+	
 	private EmployeeService service;
 	
+     @Autowired
+	public CRUDemployee(EmployeeService service) {
+   this.service = service;
+	}
 
 	@GetMapping(value = "/empoloyees")
 	public List<Employee> getAllEmpoloyees() {

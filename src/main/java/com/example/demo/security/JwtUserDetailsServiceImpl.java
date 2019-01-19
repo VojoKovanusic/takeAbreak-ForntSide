@@ -12,7 +12,12 @@ import com.example.demo.dao.UserDao;
 @Service
 public class JwtUserDetailsServiceImpl implements UserDetailsService {
 	
-	@Autowired UserDao userDao;
+	 UserDao userDao;
+   @Autowired
+	public JwtUserDetailsServiceImpl(UserDao userDao) {
+	 
+		this.userDao = userDao;
+	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

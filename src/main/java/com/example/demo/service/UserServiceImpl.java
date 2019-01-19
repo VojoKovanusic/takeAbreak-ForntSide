@@ -1,7 +1,5 @@
 package com.example.demo.service;
 
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +14,25 @@ import com.example.demo.util.PasswordUtil;
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
-	@Autowired
-	EmailSender sendEmail;
-	@Autowired
+ 
+	private EmailSender sendEmail;
 	private UserDao userDao;
+	private PausaService pausaService;
 	
 	@Autowired
-	PausaService pausaService;
+	public UserServiceImpl(EmailSender sendEmail, UserDao userDao, PausaService pausaService) {
+	 
+		this.sendEmail = sendEmail;
+		this.userDao = userDao;
+		this.pausaService = pausaService;
+	}
 
 	@Override
 	public User save(User user) {
 		String password = PasswordUtil.getPasswordHash(user.getPassword());
 		user.setPassword(password); 
 	 
-		//user.setUpdatedDate(warings);
-		//sendEmail.sendSimpleMessage(user);
+		user.setEnabled(true);
 		return userDao.save(user);
 	}
 

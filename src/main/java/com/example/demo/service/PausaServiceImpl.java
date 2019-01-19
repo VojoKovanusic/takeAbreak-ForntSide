@@ -1,12 +1,9 @@
 package com.example.demo.service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,8 +17,13 @@ import com.example.demo.util.TimeUtil;
 @Transactional
 public class PausaServiceImpl implements PausaService{
 
-	@Autowired
+	
 	private UserDao userDao;
+	@Autowired
+	public PausaServiceImpl(UserDao userDao) {
+	 
+		this.userDao = userDao;
+	}
 
 	@Override
 	public User takeABreak(User u) throws InterruptedException {
