@@ -17,29 +17,24 @@ public class UserServiceImpl implements UserService {
  
 	private EmailSender sendEmail;
 	private UserDao userDao;
-	private PausaService pausaService;
 	
 	@Autowired
-	public UserServiceImpl(EmailSender sendEmail, UserDao userDao, PausaService pausaService) {
+	public UserServiceImpl(EmailSender sendEmail, UserDao userDao) {
 	 
 		this.sendEmail = sendEmail;
 		this.userDao = userDao;
-		this.pausaService = pausaService;
 	}
-
 	@Override
 	public User save(User user) {
+		this.sendEmail.sendSimpleMessage(user); 
 		String password = PasswordUtil.getPasswordHash(user.getPassword());
 		user.setPassword(password); 
-	 
 		user.setEnabled(true);
 		return userDao.save(user);
 	}
 
 	@Override
 	public List<User> findAll() {
-		
-	
 		return (List<User>) userDao.findAll();
 	}
 
@@ -48,5 +43,16 @@ public class UserServiceImpl implements UserService {
 		return userDao.findByEmailIgnoreCase(email);
 	}
 
-	
+	@Override
+	public boolean checkIsEmailExist(String email) {
+ 
+	try {
+		userDao.findByEmailIgnoreCase(email).equals(null);
+	} catch (NullPointerException e) {
+		return false;// TODO: handle exception
+	}
+		return true;
+	}
+
+
 }

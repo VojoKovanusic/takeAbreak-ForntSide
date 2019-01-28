@@ -9,7 +9,10 @@ public interface PausaService  {
 	
 	User takeABreak(User user) throws InterruptedException ;
 
-		List<User> uersOnPauseNow();
+	 List<User> uersOnPauseNow();
 	
-	List<User> uersOnPauseToday();
+	List<User> uersOnPauseToday(); 
+	
+	void hideWarningAlert(User user);
+	
 }

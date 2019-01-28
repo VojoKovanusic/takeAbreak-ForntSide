@@ -50,8 +50,8 @@ public class User implements Serializable {
 	@Column(name="finishedPause") 
 	private String endTimeOfThePausa;
 	
-	@Column(name="waring")
-	private String waring;
+	@Column(name="sendAlertWraning")
+	private boolean sendAlertWarning;
 	
 	@Column(name="isTakePauseNow")
 	private boolean isTakePauseNow;

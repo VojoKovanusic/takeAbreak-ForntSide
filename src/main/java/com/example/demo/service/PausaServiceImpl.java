@@ -11,30 +11,33 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.dao.UserDao;
 import com.example.demo.model.User;
+import com.example.demo.util.EmailSender;
 import com.example.demo.util.TimeUtil;
 
 @Service
 @Transactional
-public class PausaServiceImpl implements PausaService{
+public class PausaServiceImpl implements PausaService {
 
-	
+	private EmailSender emailSender;
 	private UserDao userDao;
+
 	@Autowired
-	public PausaServiceImpl(UserDao userDao) {
-	 
+	public PausaServiceImpl(UserDao userDao, EmailSender emailSender) {
+
 		this.userDao = userDao;
+		this.emailSender = emailSender;
 	}
 
 	@Override
 	public User takeABreak(User u) throws InterruptedException {
-		User user= userDao.findOne(u.getId());	
-		
-		if (!isToManyPeopleOnPauseCurrently ()&& !isUserTakePauseToday(user)) 
-			userWentOnPause(user);	
+		User user = userDao.findOne(u.getId());
+
+		if (!isToManyPeopleOnPauseCurrently() && !isUserTakePauseToday(user))
+			userWentOnPause(user);
 		return user;
 	}
 
-	private boolean isUserTakePauseToday(User user) { 
+	private boolean isUserTakePauseToday(User user) {
 		return user.isTakePauseToday();
 	}
 
@@ -50,47 +53,70 @@ public class PausaServiceImpl implements PausaService{
 		}
 		return false;
 	}
-	
-	private void userWentOnPause(User user) {
-	 LocalDateTime warings = LocalDateTime.now().plusSeconds(30);
 
+	private void userWentOnPause(User user) {
+
+		user.setEndTimeOfThePausa(TimeUtil.get());
 		user.setTakePauseToday(true);
 		user.setTakePauseNow(true);
-		String w=warings.toString();
-		w=w.substring(0,  w.length() - 4);
-		user.setWaring(w);
-		
-		user.setEndTimeOfThePausa(TimeUtil.get());
 		userDao.save(user);
 
-		
-		System.out.println("warings"+w);
+		alertWarings(user);
+
+		alertEnd(user);
+	}
+
+	private void alertWarings(User user) {
 		new Thread(() -> {
-		      try {
-				TimeUnit.SECONDS.sleep(60);
-				 user.setTakePauseNow(false); 
-		         userDao.save(user);   
+			try {
+				TimeUnit.SECONDS.sleep(30);
+				user.setSendAlertWarning(true);
+				emailSender.alertWorningsMail(user);
+				userDao.save(user);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		
-		 }).start();
+
+		}).start();
 	}
 
+	private void alertEnd(User user) {
+		new Thread(() -> {
+			try {
+				TimeUnit.SECONDS.sleep(60);
+				user.setTakePauseNow(false);
+				user.setSendAlertWarning(false);
+				userDao.save(user);
 
+				emailSender.alertEndMail(user);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+		}).start();
+	}
 
 	@Override
 	public List<User> uersOnPauseNow() {
-		
-		return	userDao.findAll().stream().filter
-				(e-> e.isTakePauseNow())
-				.collect(Collectors.toList()); 
+
+		return userDao.findAll().stream()
+				.filter(e -> e.isTakePauseNow())
+				.collect(Collectors.toList());
 	}
+
 	@Override
 	public List<User> uersOnPauseToday() {
-
-		return	 userDao.findAll().stream().filter
-				(e-> e.isTakePauseToday())
+		return userDao.findAll().stream()
+				.filter(e -> e.isTakePauseToday())
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public void  hideWarningAlert(User u) {  
+		User user = userDao.findOne(u.getId());
+		user.setSendAlertWarning(false);
+		userDao.save(user);
+		
+	 
 	}
 }
